@@ -14,6 +14,13 @@
       <div class="navbar-menu">
         <div class="navbar-end">
           <a
+            href="https://github.com/mijac1138/friday-showcase"
+            class="navbar-item"
+            target="_blank"
+          >
+           <b-icon icon="git"></b-icon><span>repo</span>
+          </a>
+          <a
             class="navbar-item button is-light"
             @click="showModal = true"
           >
