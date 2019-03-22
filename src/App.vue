@@ -1,25 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <div class="navbar-item">
-          <h2>Friday Showcase
-            <b-icon
-              style="margin-left: 10px; vertical-align: middle;"
-              icon="sunglasses"
-              size="is-medium">
-            </b-icon>
-          </h2>
-        </div>
-      </div>
-      <div class="navbar-menu">
-        <div class="navbar-end">
-          <a class="navbar-item button is-light">
-            Add project
-          </a>
-        </div>
-      </div>
-    </nav>
+    <Navbar></Navbar>
     <section class="section">
       <div class="container">
         <div class="columns">
@@ -30,6 +11,23 @@
                 :columns="columns"
                 detailed
               >
+                <template slot-scope="props">
+                  <b-table-column v-for="(column, index) in columns"
+                    :key="index"
+                    :label="column.label">
+                    <div v-if="column.field == 'link'">
+                      <a :href="props.row[column.field]" target="_blank">Webpage</a>
+                    </div>
+                    <div v-else-if="column.field == 'delete'">
+                      <button class="button field is-danger" @click="onDelete(props.row.id)">
+                        <b-icon icon="close"></b-icon>
+                      </button>
+                    </div>
+                    <span v-else>
+                      {{ props.row[column.field] }}
+                    </span>
+                  </b-table-column>
+                </template>
                 <template #detail="{ row }">
                   <Showcase :project="row"></Showcase>
                 </template>
@@ -43,33 +41,34 @@
 </template>
 
 <script>
-import Showcase from "./components/Showcase.vue";
+import Showcase from './components/Showcase.vue'
+import Navbar from './components/Navbar.vue'
+
 export default {
-  components: { Showcase },
+  components: { Showcase, Navbar },
   data() {
     return {
-      showcases: [
-        {
-          name: 'Course hunted!',
-          description: "Webpage for scraping 'darkweb' tutorials site to watch videos add-free.",
-          goal: 'Learn to use Typescript with Vue',
-          link: 'https://course-hunted.firebaseapp.com/',
-          date: '8 March 2019'
-        },
-        {
-          name: 'Vue dynamic templates',
-          description: 'See goal',
-          goal: 'Server side async vue components without special webpack setup',
-          link: '',
-          date: '1 March 2019'
-        }
-      ],
       columns: [
         { field: 'name', label: 'Project'},
-        { field: 'description', label: 'About' },
+        { field: 'about', label: 'About' },
         { field: 'goal', label: 'Goal' },
         { field: 'date', label: 'Date' },
+        { field: 'link', label: 'Link' },
+        { field: 'delete', label: 'Delete' },
       ]
+    }
+  },
+  methods: {
+    onDelete(id) {
+      this.$store.dispatch('deleteShowcase', id)
+    }
+  },
+  mounted() {
+    this.$store.dispatch('getShowcases')
+  },
+  computed: {
+    showcases() {
+      return this.$store.state.showcases;
     }
   }
 }
